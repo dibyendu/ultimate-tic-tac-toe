@@ -18,12 +18,17 @@ const websocket_server = new WebSocket.Server({ server, path: process.env.VITE_W
 app.use(compression())
 app.use(express.json())
 app.use(express.static(path.join(__dirname, 'build')))
-app.use(helmet())
-
-app.use((_, res, next) => {
-  res.setHeader('content-security-policy', "default-src 'self'; script-src 'self' cdn.skypack.dev; style-src 'self' fonts.googleapis.com; font-src 'self' fonts.gstatic.com; worker-src 'self' cdn.skypack.dev;")
-  next()
-})
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      'defaultSrc': ["'self'"],
+      'script-src': ["'self'", 'cdn.skypack.dev'],
+      'style-src': ["'self'", 'fonts.googleapis.com'],
+      'font-src': ["'self'", 'fonts.gstatic.com'],
+      'worker-src': ["'self'", 'cdn.skypack.dev'],
+    }
+  }
+}))
 
 app.post('/save-game', (req, res) => {
   const { gameid, game } = req.body
