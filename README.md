@@ -1,5 +1,3 @@
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz_small.svg)](https://stackblitz.com/github/dibyendu/ultimate-tic-tac-toe)
-
 ### To train the agent
 
 - set the training parameters in [Train.mjs](#AlphaZeroAgent/Train.mjs)
