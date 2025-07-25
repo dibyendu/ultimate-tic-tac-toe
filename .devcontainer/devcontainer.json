@@ -1,0 +1,6 @@
+{
+	"name": "NodeJs v12.22.10",
+	"build": {
+	  "dockerfile": "Dockerfile"
+	}
+}
