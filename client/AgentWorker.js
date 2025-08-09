@@ -64,11 +64,11 @@ fetch(`${SERVER_URL}/check-saved-model`)
     policy.load(await tf.loadLayersModel(`${SERVER_URL}/model/model.json`, {
       onProgress: percentage => postMessage({ percentage })
     }))
-    self.onmessage = ({ data: { context } }) => action(context, true)
+    self.onmessage = ({ data: { context }}) => action(context, true)
     policy.summary()
   }
   postMessage({ percentage: 'done' })
 })
 .catch(error => console.error(error))
 
-onmessage = ({ data: { context } }) => action(context)
+onmessage = ({ data: { context }}) => action(context)

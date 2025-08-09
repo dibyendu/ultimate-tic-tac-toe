@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import GameContext, { InitialContext } from './GameContext'
 import { setUpWebSocket, checkStatus, parseJSON } from './util'
 import { SERVER_URL } from './config'
@@ -32,8 +32,9 @@ function Game({ gameid }) {
   const [modalVisible, setModalVisible] = useState(false)
   const [context, setContext] = useState(null)
   const [webSocket, setWebSocket] = useState(null)
-  const player_name = localStorage.getItem(gameid)
-  const userid = localStorage.getItem('userid')
+
+  const player_name = useMemo(() => localStorage.getItem(gameid))
+  const userid = useMemo(() => localStorage.getItem('userid'), [])
 
   useEffect(() => {
     if (!player_name) {
@@ -106,7 +107,7 @@ function Game({ gameid }) {
           data.names = context.names
           setContext({ ...data })
         },
-        () => webSocket.send(JSON.stringify({ register: gameid, name: player_name }))
+        () => webSocket.send(JSON.stringify({ type: 'register', gameid, name: player_name }))
       )
     }
   }, [context, webSocket])
@@ -119,7 +120,7 @@ function Game({ gameid }) {
           <Board
             sendToServer={new_ctx => {
               if (Object.values(context.players).every(p => p == 'HUMAN'))
-                webSocket.send(JSON.stringify({ gameid, context: new_ctx }))
+                webSocket.send(JSON.stringify({ type: 'move', gameid, context: new_ctx }))
             }}
           />
         </GameContext.Provider>

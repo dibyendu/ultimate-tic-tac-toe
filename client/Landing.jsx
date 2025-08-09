@@ -83,7 +83,7 @@ function Landing() {
 
   worker.onerror = error => console.error(error)
   worker.onmessage = ({ data: { percentage } }) => {
-    if (percentage == 'done')
+    if (percentage === 'done')
       setLoaded(true)
     else
       setProgress(percentage * 100)

@@ -12,7 +12,10 @@ function Board({ scaled, sendToServer }) {
   const { worker } = useContext(WorkerContext)
 
   worker.onerror = error => console.error(error)
-  worker.onmessage = ({ data: { move } }) => handleMove(move)
+  worker.onmessage = ({ data: { move }}) => {
+    if (move)
+      handleMove(move)
+  }
 
   const [winner, setWinner] = useState(null)
   const [message, setMessage] = useState('')
@@ -40,7 +43,7 @@ function Board({ scaled, sendToServer }) {
   }
 
   const handleMove = move => {
-    let { error, R, C, r, c } = move
+    const { error, R, C, r, c } = move
     if (error) {
       setMessage(error)
       setShowMessage(true)
