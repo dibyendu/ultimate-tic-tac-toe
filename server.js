@@ -22,6 +22,7 @@ const kv = await Deno.openKv()
 const local_sockets = {}
 const global_game_rooms = {}
 
+
 function updateGlobalRooms({ data }) {
   const { type, room_id, socket_id } = data
   if (type === 'add') {
@@ -37,6 +38,30 @@ function updateGlobalRooms({ data }) {
   }
 }
 
+
+function broadcastMessage(gameid, uuid, message) {
+  const remote_socket_ids = []
+  for (const socket_id of global_game_rooms[gameid].values()) {
+    if (socket_id !== uuid) {
+      if (socket_id in local_sockets)
+        local_sockets[socket_id].send(JSON.stringify(message))
+      else
+        remote_socket_ids.push(socket_id)
+    }
+  }
+  channel.postMessage({ type: 'transmit', socket_ids: remote_socket_ids, message })
+}
+
+
+function closeWebSocket(socket_id) {
+  const socket = local_sockets[socket_id]
+  updateGlobalRooms({ data: { type: 'remove', room_id: socket.roomid, socket_id }})
+  channel.postMessage({ type: 'remove', room_id: socket.roomid, socket_id })
+  delete local_sockets[socket_id]
+  socket.close()
+}
+
+
 const channel = new BroadcastChannel('uttt-channel')  // a BroadcastChannel used by all isolates (instances)
 channel.onmessage = ({ data }) => {                   // when a new message comes in from other isolates
   const { type } = data
@@ -51,32 +76,13 @@ channel.onmessage = ({ data }) => {                   // when a new message come
 }
 
 
-function broadcast(gameid, uuid, message) {
-  const remote_socket_ids = []
-  for (const socket_id of global_game_rooms[gameid].values()) {
-    if (socket_id !== uuid) {
-      if (socket_id in local_sockets)
-        local_sockets[socket_id].send(JSON.stringify(message))
-      else
-        remote_socket_ids.push(socket_id)
-    }
-  }
-  channel.postMessage({ type: 'transmit', socket_ids: remote_socket_ids, message })
-}
-
-
 app.get(
   `/${process.env.VITE_WEBSOCKET_PATH}`,
   upgradeWebSocket(_context => {
     const uuid = crypto.randomUUID()
     return {
-      onOpen: (_, socket) => local_sockets[uuid] = socket,
-      onClose: () => {
-        const socket = local_sockets[uuid]
-        updateGlobalRooms({ data: { type: 'remove', room_id: socket.roomid, socket_id: uuid }})
-        channel.postMessage({ type: 'remove', room_id: socket.roomid, socket_id: uuid })
-        delete local_sockets[uuid]
-      },
+      onOpen: (_event, socket) => local_sockets[uuid] = socket,
+      onClose: () => closeWebSocket(uuid),
       onError: error => console.error(error),
       onMessage({ data: message }, socket) {
         const { type, gameid, name, context } = JSON.parse(message)
@@ -84,12 +90,12 @@ app.get(
           socket.roomid = gameid
           updateGlobalRooms({ data: { type: 'add', room_id: gameid, socket_id: uuid }})
           channel.postMessage({ type: 'add', room_id: gameid, socket_id: uuid })
-          broadcast(gameid, uuid, { name })
+          broadcastMessage(gameid, uuid, { name })
         } else if (type === 'move') {
           const { player, ...game } = context
           kv.set(['uttt-namespace', gameid], game)
           if (gameid in global_game_rooms)
-            broadcast(gameid, uuid, context)
+            broadcastMessage(gameid, uuid, context)
         }
       }
     }
@@ -123,16 +129,16 @@ const controller = new AbortController()
 const server = Deno.serve({
   port: process.env.PORT,
   signal: controller.signal,
-  onListen: ({ port }) => console.info(`server listening on ${port}`)
+  onListen: ({ port }) => console.info(`App server listening on ${port}`)
 }, app.fetch)
 
 
 Deno.addSignalListener('SIGINT', async () => {
   controller.abort()
   for (const socket_id in local_sockets)
-    local_sockets[socket_id].close()
+    closeWebSocket(socket_id)
   channel.close()
   await server.finished
-  console.info('server closed gracefully')
+  console.info('App server closed gracefully')
   Deno.exit(0)
 })
