@@ -47,7 +47,7 @@ jobs:
           npm run build
           mv build/ultimate-tic-tac-toe/assets build
           rm -rf build/ultimate-tic-tac-toe
-          cp -r AlphaZeroAgent/model build/ultimate-tic-tac-toe
+          cp -r AlphaZeroAgent/model build
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
