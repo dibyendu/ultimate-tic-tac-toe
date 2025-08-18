@@ -69,6 +69,10 @@ jobs:
       - name: Checkout Git Repository
         uses: actions/checkout@v4
 
+      - name: Remove Large Model Files
+        run: |
+          rm -rf AlphaZeroAgent/model
+
       - name: Install Deno
         uses: denoland/setup-deno@v2
         with:
