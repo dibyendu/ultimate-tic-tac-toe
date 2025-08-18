@@ -178,8 +178,10 @@ app.post('/fetch-game', async context => {
   const { value: game } = await kv.get(['uttt-namespace', gameid])
   return context.json({ result: game })
 })
-app.get('/check-saved-model', context => context.json({ found: existsSync(`./${SAVED_MODEL_PATH}/model/model.json`) }))
-app.use('/model/*', serveStatic({ root: `${SAVED_MODEL_PATH}/` }))
+
+
+// app.get('/check-saved-model', context => context.json({ found: existsSync(`./${SAVED_MODEL_PATH}/model/model.json`) }))
+// app.use('/model/*', serveStatic({ root: `${SAVED_MODEL_PATH}/` }))
 
 
 

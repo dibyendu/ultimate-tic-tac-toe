@@ -1,7 +1,6 @@
 import * as tf from '@tensorflow/tfjs'
 
-import { checkStatus, parseJSON } from './util'
-import { SERVER_URL } from './config'
+import { CLIENT_PATH_PREFIX } from './config'
 
 import { Game } from '../AlphaZeroAgent/Game.mjs'
 import { MCTS } from '../AlphaZeroAgent/MCTS.mjs'
@@ -56,12 +55,11 @@ function action(context, using_model = false) {
   return elapsed >= context.turn_delay ? postMessage({ move }) : setTimeout(() => postMessage({ move }), context.turn_delay - elapsed)
 }
 
-fetch(`${SERVER_URL}/check-saved-model`)
-.then(checkStatus)
-.then(parseJSON)
-.then(async ({ found }) => {
-  if (found) {
-    policy.load(await tf.loadLayersModel(`${SERVER_URL}/model/model.json`, {
+
+fetch(`/${CLIENT_PATH_PREFIX}/model/model.json`, { method: 'HEAD' })
+.then(async response => {
+  if (response.ok) {
+    policy.load(await tf.loadLayersModel(`/${CLIENT_PATH_PREFIX}/model/model.json`, {
       onProgress: percentage => postMessage({ percentage })
     }))
     self.onmessage = ({ data: { context }}) => action(context, true)
