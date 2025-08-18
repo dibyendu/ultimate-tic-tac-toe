@@ -56,12 +56,10 @@ function action(context, using_model = false) {
 }
 
 
-// fetch(`/${CLIENT_PATH_PREFIX}/model/model.json`, { method: 'HEAD' })
-fetch(`https://dibyendu.github.io/ultimate-tic-tac-toe/model/model.json`, { method: 'HEAD' })
+fetch(`/${CLIENT_PATH_PREFIX}/model/model.json`, { method: 'HEAD' })
 .then(async response => {
   if (response.ok) {
-    // policy.load(await tf.loadLayersModel(`/${CLIENT_PATH_PREFIX}/model/model.json`, {
-    policy.load(await tf.loadLayersModel(`https://dibyendu.github.io/ultimate-tic-tac-toe/model/model.json`, {
+    policy.load(await tf.loadLayersModel(`/${CLIENT_PATH_PREFIX}/model/model.json`, {
       onProgress: percentage => postMessage({ percentage })
     }))
     self.onmessage = ({ data: { context }}) => action(context, true)

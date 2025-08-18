@@ -7,10 +7,12 @@
 import dotenv from 'dotenv'
 import { cors } from 'hono/cors'
 import { serveStatic, upgradeWebSocket } from 'hono/deno'
+import { existsSync } from 'https://deno.land/std/fs/mod.ts'
 import { Hono } from 'https://deno.land/x/hono@v3.4.1/mod.ts'
 
 dotenv.config({ path: '.env.local' })
 
+const SAVED_MODEL_PATH = 'AlphaZeroAgent'
 
 const instance_id = crypto.randomUUID()
 
@@ -176,6 +178,10 @@ app.post('/fetch-game', async context => {
   const { value: game } = await kv.get(['uttt-namespace', gameid])
   return context.json({ result: game })
 })
+
+
+// app.get('/check-saved-model', context => context.json({ found: existsSync(`./${SAVED_MODEL_PATH}/model/model.json`) }))
+// app.use('/model/*', serveStatic({ root: `${SAVED_MODEL_PATH}/` }))
 
 
 
