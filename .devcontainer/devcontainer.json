@@ -2,9 +2,5 @@
 	"name": "NodeJs v12.22.10",
 	"build": {
 	  "dockerfile": "Dockerfile"
-	},
-	"hostRequirements": {
-	   "cpus": 16,
-	   "memory": "16gb"
 	}
 }
