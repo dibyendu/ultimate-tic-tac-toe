@@ -136,8 +136,6 @@ for await (const { key: [, , id] } of entries) {
     runnings_instances[id] = null
 }
 
-channel.postMessage({ type: 'sync', sender: instance_id })
-
 
 app.get(
   `/${process.env.VITE_WEBSOCKET_PATH}`,
@@ -188,12 +186,14 @@ app.get('*', serveStatic({ path: 'build/index.html' }))
 
 
 
-
 const controller = new AbortController()
 const server = Deno.serve({
   port: process.env.PORT,
   signal: controller.signal,
-  onListen: ({ port }) => console.info(`App server listening on ${port}`)
+  onListen: ({ port }) => {
+    channel.postMessage({ type: 'sync', sender: instance_id })
+    console.info(`App server listening on ${port}`)
+  }
 }, app.fetch)
 
 
