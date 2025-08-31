@@ -29,7 +29,7 @@ const runnings_instances = {}
 
 
 
-
+channel.onmessageerror = error => console.error(error)
 channel.onmessage = ({ data }) => {                    // when a new message comes in from other isolates (instances)
   const { type } = data
 
