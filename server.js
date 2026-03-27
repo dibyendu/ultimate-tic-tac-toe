@@ -1,5 +1,4 @@
 /*
- * deno add npm:hono/deno npm:dotenv
  * deno --allow-read --allow-env --allow-net --unstable-kv server.js
  */
 

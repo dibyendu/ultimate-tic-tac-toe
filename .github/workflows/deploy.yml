@@ -82,5 +82,4 @@ jobs:
 
       - name: Deploy to Deno Deploy
         run: |
-            deno add npm:hono/deno npm:dotenv
-            deno deploy --prod --token ${{ secrets.DENO_DEPLOY_TOKEN }}
+          deno deploy --prod --token ${{ secrets.DENO_DEPLOY_TOKEN }}
