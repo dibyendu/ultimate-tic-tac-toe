@@ -85,7 +85,5 @@ jobs:
           deno add npm:hono/deno npm:dotenv
 
       - name: Deploy to Deno Deploy
-        uses: denoland/deployctl@v1
-        with:
-          project: ultimate-tic-tac-toe
-          entrypoint: server.js
+        run: |
+            deno deploy --prod --token ${{ secrets.DENO_DEPLOY_TOKEN }}

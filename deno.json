@@ -1,0 +1,6 @@
+{
+  "deploy": {
+    "org": "dibyendu",
+    "app": "ultimate-tic-tac-toe"
+  }
+}

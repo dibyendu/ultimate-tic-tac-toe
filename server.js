@@ -1,13 +1,12 @@
 /*
  * deno add npm:hono/deno npm:dotenv
- * deno --allow-read --allow-env --allow-net --unstable-kv --unstable-broadcast-channel server.js
+ * deno --allow-read --allow-env --allow-net --unstable-kv server.js
  */
 
 
 import dotenv from 'dotenv'
 import { cors } from 'hono/cors'
 import { serveStatic, upgradeWebSocket } from 'hono/deno'
-import { existsSync } from 'https://deno.land/std/fs/mod.ts'
 import { Hono } from 'https://deno.land/x/hono@v3.4.1/mod.ts'
 
 dotenv.config({ path: '.env.local' })
