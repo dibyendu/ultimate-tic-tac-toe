@@ -82,5 +82,4 @@ jobs:
 
       - name: Deploy to Deno Deploy
         run: |
-          deno install
           deno deploy --prod --token ${{ secrets.DENO_DEPLOY_TOKEN }}
