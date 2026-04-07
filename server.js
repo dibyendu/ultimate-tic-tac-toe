@@ -1,4 +1,5 @@
 /*
+ * To run locally:
  * deno --allow-read --allow-env --allow-net --unstable-kv server.js
  */
 
